@@ -39,7 +39,6 @@ function startBackendIfNeeded() {
     : path.join(__dirname, '..', 'backend');
   const backendEntry = path.join(backendDir, 'dist', 'src', 'main.js');
   if (!fs.existsSync(backendEntry)) {
-    // Backend might be started externally (dev) or not built yet.
     return;
   }
 
@@ -51,7 +50,7 @@ function startBackendIfNeeded() {
     try {
       jwtSecret = fs.readFileSync(jwtSecretFile, 'utf8').trim();
     } catch {
-      // ignore
+      
     }
   }
 
@@ -109,7 +108,6 @@ function createWindow() {
   const port = process.env.PORT ?? '8000';
   const url = `http://${host}:${port}`;
 
-  // Backend may take a moment to boot; wait briefly.
   waitForServer(url, 15000)
     .then(() => win.loadURL(url))
     .catch(() => win.loadURL(url));
