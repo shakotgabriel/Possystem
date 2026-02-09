@@ -1,0 +1,64 @@
+{
+  "name": "pos-desktop",
+  "private": true,
+  "version": "0.0.0",
+  "main": "main.cjs",
+  "scripts": {
+    "dev": "concurrently -k -n BACKEND,WEB,ELECTRON \"npm --prefix ../backend run start:dev\" \"npm --prefix ../point-of-sale run dev\" \"wait-on http://localhost:5173 && cross-env START_BACKEND=false ELECTRON_RENDERER_URL=http://localhost:5173 electron .\"",
+    "build:offline": "npm --prefix ../point-of-sale run build && npm --prefix ../backend run build",
+    "start:offline": "npm run build:offline && cross-env ELECTRON_RENDERER_URL= START_BACKEND=true electron .",
+    "pack": "npm run build:offline && electron-builder --dir",
+    "dist": "npm run build:offline && electron-builder",
+    "dist:win": "npm run build:offline && electron-builder -w"
+  },
+  "build": {
+    "appId": "com.shakot.pos",
+    "productName": "POS",
+    "files": [
+      "main.cjs",
+      "package.json"
+    ],
+    "asar": true,
+    "directories": {
+      "output": "release"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.business"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "zip"
+      ]
+    },
+    "extraResources": [
+      {
+        "from": "../backend/dist",
+        "to": "backend/dist"
+      },
+      {
+        "from": "../backend/node_modules",
+        "to": "backend/node_modules"
+      },
+      {
+        "from": "../backend/package.json",
+        "to": "backend/package.json"
+      },
+      {
+        "from": "../point-of-sale/dist",
+        "to": "point-of-sale/dist"
+      }
+    ]
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
+    "electron": "^34.2.0",
+    "electron-builder": "^25.1.8",
+    "wait-on": "^8.0.3"
+  }
+}
